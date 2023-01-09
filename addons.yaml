@@ -1,10 +1,18 @@
 microk8s-addons:
   addons:
-    # ... list of other addons...
     - name: "easyhaproxy"
       description: "EasyHAProxy can detect and configure HAProxy automatically based on ingress labels"
       version: "0.0.1"
-      check_status: "sa/ingress-easyhaproxy"
+      check_status: "pod/ingress-easyhaproxy"
       supported_architectures:
         - amd64
         - arm64
+
+    - name: "parking"
+      description: "Static webserver to park a domain. Requires EasyHAProxy."
+      version: "0.0.1"
+      check_status: "deployment.apps/parking-static-httpserver"
+      supported_architectures:
+        - amd64
+        - arm64
+
