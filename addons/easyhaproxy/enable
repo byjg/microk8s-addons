@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+
+source $SNAP/actions/common/utils.sh
+CURRENT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+
+"$SNAP/microk8s-enable.wrapper" dns
+"$SNAP/microk8s-enable.wrapper" helm3
+
+
+NAMESPACE_PTR="easyhaproxy"
+
+KUBECTL="$SNAP/microk8s-kubectl.wrapper"
+HELM="$SNAP/microk8s-helm3.wrapper"
+
+echo "Enabling EasyHAProxy Ingress Controller"
+echo
+
+$KUBECTL create namespace "$NAMESPACE_PTR" > /dev/null 2>&1 || true
+
+$HELM repo add byjg https://opensource.byjg.com/helm
+$HELM repo update
+
+$KUBECTL label nodes $(hostname) "easyhaproxy/node=master"
+
+$HELM upgrade --install ingress byjg/easyhaproxy \
+    --namespace $NAMESPACE_PTR \
+    --set resources.requests.cpu=100m \
+    --set resources.requests.memory=128Mi
+
+
+# helm upgrade --install ingress byjg/easyhaproxy \
+#     --namespace easyhaproxy \
+#     --set resources.requests.cpu=100m \
+#     --set resources.requests.memory=128Mi \
+#     --set service.create=true \
+#     --set service.type=NodePort \
+#     --set binding.ports.http=30080 \
+#     --set binding.ports.https=30443 \
+#     --set binding.ports.stats=31936
