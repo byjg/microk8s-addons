@@ -12,7 +12,7 @@ Enable the ByJG microk8s add-ons.
 Access the microk8s host machine and run:
 
 ```shell
-git clone https://github.com/byjg/microk8s-addons.git /var/snap/microk8s/common/addons/byjg
+microk8s addons repo add byjg https://github.com/byjg/microk8s-addons.git
 ```
 
 Check if it is installed:
